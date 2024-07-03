@@ -1,6 +1,6 @@
 import { TCustomer, TProduct } from "./types";
 
-export const user:TCustomer [] = [
+export const users:TCustomer [] = [
     {
         id: "user1",
         name: "Antonio",
@@ -49,6 +49,12 @@ export const user:TCustomer [] = [
         createAt: `${new Date().toISOString()}`
     }
 ]
+
+export const createUser = (newUser:TCustomer):void => {
+    users.push(newUser)
+    console.table(users)
+    return console.log("Cadastro realizado com sucesso!")
+}
 
 export const products: TProduct[] = [
     {
