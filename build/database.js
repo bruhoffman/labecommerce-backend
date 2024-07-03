@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.products = exports.user = void 0;
-exports.user = [
+exports.products = exports.createUser = exports.users = void 0;
+exports.users = [
     {
         id: "user1",
         name: "Antonio",
@@ -45,6 +45,12 @@ exports.user = [
         createAt: `${new Date().toISOString()}`
     }
 ];
+const createUser = (newUser) => {
+    exports.users.push(newUser);
+    console.table(exports.users);
+    return console.log("Cadastro realizado com sucesso!");
+};
+exports.createUser = createUser;
 exports.products = [
     {
         id: "prod1",
