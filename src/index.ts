@@ -12,4 +12,4 @@ import { users, products, createUser, createProduct, getAllUsers, getAllProducts
 //getAllProducts()
 
 //       Exercício 3 - Typescript
-//searchProductsByName("Mouse")
+searchProductsByName("Mouse")
