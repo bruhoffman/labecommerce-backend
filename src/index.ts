@@ -1,4 +1,7 @@
-//import { users, products, createUser, createProduct, getAllUsers, getAllProducts, searchProductsByName } from "./database";
+import { users, products, createUser, createProduct, getAllUsers, getAllProducts, searchProductsByName } from "./database";
+import express, { Request, Response } from "express"
+import cors from "cors"
+import { TProduct } from "./types"
 
 //console.table(users)
 //console.table(products)
@@ -12,12 +15,8 @@
 //getAllProducts()
 
 //       Exercício 3 - Typescript
-//searchProductsByName("Mouse")
 
-import express, { Request, Response } from "express"
-import cors from "cors"
-import { users, products, searchProductsByName, createUser, createProduct } from "./database"
-import { TProduct } from "./types"
+//searchProductsByName("Mouse")
 
 const app = express()
 

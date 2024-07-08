@@ -1,7 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.products = exports.user = void 0;
-exports.user = [
+exports.createProduct = exports.products = exports.createUser = exports.users = void 0;
+exports.getAllUsers = getAllUsers;
+exports.getAllProducts = getAllProducts;
+exports.searchProductsByName = searchProductsByName;
+exports.users = [
     {
         id: "user1",
         name: "Antonio",
@@ -45,40 +48,53 @@ exports.user = [
         createAt: `${new Date().toISOString()}`
     }
 ];
+const createUser = (id, name, email, password) => {
+    const newUser = { id: id, name: name, email: email, password: password, createAt: `${new Date().toISOString()}` };
+    exports.users.push(newUser);
+    //console.table(users)
+    return console.log("Cadastro realizado com sucesso!");
+};
+exports.createUser = createUser;
+function getAllUsers() {
+    console.log("Lista atualizada de users");
+    console.table(exports.users);
+}
 exports.products = [
     {
         id: "prod1",
-        name: "Monitor 17'",
+        name: "Monitor Dell 17'",
         price: 750.00,
         description: "Monitor Dell 17' UHD",
-        imageUrl: "https://i.dell.com/is/image/DellContent//content/dam/images/products/electronics-and-accessories/dell/monitors/e-series/e2020h/e2020h-cfp-0025lf000-bk.psd?fmt=pjpg&pscan=auto&scl=1&wid=3372&hei=3118&qlt=100,1&resMode=sharp2&size=3372,3118&chrss=full&imwidth=5000"
+        imageUrl: "https://encurtador.com.br/L8dfT"
     },
     {
         id: "prod2",
         name: "Mouse óptico Dell - MS116",
         price: 79.00,
-        description: "Performance confiável dia após dia, O mouse óptico MS116 da Dell conta com recursos de controle óptico por LED e conectividade com fio",
-        imageUrl: "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/peripherals/input-devices/dell/mouse/dell-ms116-optical-mouse-sapphire-1001a-black-hero-504x350.jpg?fmt=jpg&wid=504&hei=350"
+        description: "O mouse óptico MS116 da Dell tem conectividade com fio",
+        imageUrl: "https://encurtador.com.br/W7xjn"
     },
     {
         id: "prod3",
         name: "Teclado colaborativo Dell Premier",
         price: 1041.00,
-        description: "Este é o primeiro teclado recarregável* do mundo com certificação Zoom, criado para transformar a colaboração, aumentar a produtividade e proporcionar conforto o dia todo.",
-        imageUrl: "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/peripherals/input-devices/dell/keyboards/kb900/media-gallery/keyboard-kb900-black-gallery-1.psd?fmt=pjpg&pscan=auto&scl=1&wid=4721&hei=2000&qlt=100,1&resMode=sharp2&size=4721,2000&chrss=full&imwidth=5000"
+        description: "Este é o primeiro teclado recarregável* do mundo.",
+        imageUrl: "https://encurtador.com.br/uuzKU"
     },
-    {
-        id: "prod4",
-        name: "APC No-break Back-UPS 1200VA, Torre, Bivolt / 115V, 6 tomadas NBR 14136",
-        price: 1251.00,
-        description: "O Back-UPS™ da APC™ ajuda a fornecer energia para redes sem fio wireless, computadores, consoles de jogos e outros equipamentos eletrônicos",
-        imageUrl: "https://snpi.dell.com/snp/images/products/large/pt-br~AC687664/AC687664.jpg"
-    },
-    {
-        id: "prod5",
-        name: "Vostro Small Desktop",
-        price: 3508.00,
-        description: "Compre PC compacto de alto desempenho, com recursos de segurança, conectividade, ideal para aumentar sua produtividade no dia a dia e no trabalho.",
-        imageUrl: "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/desktops/vostro-desktops/vostro-3710-sff/media-gallery/desktop-vostro-3710-gallery-9.psd?fmt=pjpg&pscan=auto&scl=1&wid=2200&hei=3005&qlt=100,1&resMode=sharp2&size=2200,3005&chrss=full&imwidth=5000"
-    }
 ];
+const createProduct = (id, name, price, description, imageUrl) => {
+    const newProduct = { id, name, price, description, imageUrl };
+    exports.products.push(newProduct);
+    return console.log("Produto criado com sucesso!");
+};
+exports.createProduct = createProduct;
+function getAllProducts() {
+    console.log("Lista atualizada de produtos:");
+    console.table(exports.products);
+}
+function searchProductsByName(name) {
+    const search = exports.products.filter((product) => {
+        return product.name.toLowerCase().includes(name.toLowerCase());
+    });
+    console.table(search);
+}
