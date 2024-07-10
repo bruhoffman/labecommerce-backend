@@ -31,19 +31,34 @@ app.get("/ping", (req: Request, res: Response) => {
     res.send("Pong!")
 })
 
+// Busca todos os usuário
 app.get("/users", (req: Request, res: Response) => {
     res.status(200).send(users)
 })
 
+// Cadastra um novo usuário, chama a função createUser
 app.post("/users", (req: Request, res: Response) => {
     createUser("user7", "Gedalia", "gege@email.com", "ge.1234")
     res.status(201).send(users)
 })
 
+// Busca por params id e deleta o user selecionado
+app.delete("/users/:id", (req: Request, res: Response) => {
+    const idToDelete = req.params.id
+    
+    const index = users.findIndex((user) => user.id === idToDelete)
+
+    index < 0 ? res.status(400).send("User não encontrato") : users.splice(index, 1)
+
+    res.status(200).send("User apagado com sucesso!")
+})
+
+// Busca todos os produtos.
 app.get("/products", (req: Request, res: Response) => {
     res.status(200).send(products)
 })
 
+// Busca produto por nome do produto via query.
 app.get("/products/search", (req: Request, res: Response) => {
     const q = req.query.q as string;
     let result = searchProductsByName(q)
@@ -55,7 +70,43 @@ app.get("/products/search", (req: Request, res: Response) => {
     }
 })
 
+// Cadastra um novo produto, chama a função createProducts
 app.post("/products", (req: Request, res: Response) => {
     createProduct("prod4", "impressora", 979, "Impressora multfuncionarl Epson", "https://encurtador.com.br/uuzKU")
     res.status(201).send(products)
+})
+
+// Busca por params id e deleta o product selecionado
+app.delete("/products/:id", (req: Request, res: Response) => {
+    const idToDelete = req.params.id
+    
+    const index = products.findIndex((product) => product.id === idToDelete)
+
+    index < 0 ? res.status(400).send("Product não encontrato") : products.splice(index, 1)
+
+    res.status(200).send("Product apagado com sucesso!")
+})
+
+// Atualizar um produto por ID
+app.put("/products/:id", (req: Request, res: Response) => {
+    const { id } = req.params
+
+    const newId = req.body.id as string | undefined
+    const newName = req.body.name as string | undefined
+    const newPrice = req.body.price as number | undefined
+    const newDescription = req.body.description as string | undefined
+    const newImageUrl = req.body.imageUrl as string | undefined
+
+    const productFound = products.find((product) => product.id === id)
+
+    if (productFound){
+        productFound.id = newId || productFound.id
+        productFound.name = newName || productFound.name
+        productFound.price = newPrice || productFound.price
+        productFound.description = newDescription || productFound.description
+        productFound.imageUrl = newImageUrl || productFound.imageUrl
+    }
+
+    res.status(200).send("Produto atualizado com sucesso!")
+
 })
