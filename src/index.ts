@@ -1,7 +1,6 @@
 import { users, products, createUser, createProduct, getAllUsers, getAllProducts, searchProductsByName } from "./database";
-import express, { Request, Response } from "express"
+import express, { query, Request, Response } from "express"
 import cors from "cors"
-import { TProduct } from "./types"
 
 //console.table(users)
 //console.table(products)
@@ -33,13 +32,31 @@ app.get("/ping", (req: Request, res: Response) => {
 
 // Busca todos os usuário
 app.get("/users", (req: Request, res: Response) => {
-    res.status(200).send(users)
+    try{
+        res.status(200).send(users)
+    }catch(error: any){
+        res.status(400).send(error.message)
+    }
 })
 
 // Cadastra um novo usuário, chama a função createUser
 app.post("/users", (req: Request, res: Response) => {
-    createUser("user7", "Gedalia", "gege@email.com", "ge.1234")
-    res.status(201).send(users)
+
+    try{
+        const id: string = "user7"
+        const name: string = "Gedalia"
+        const email: string = "gege@email.com"
+        const password: string = "ge.1234"
+
+        console.log(users)
+        //if (id === users.id){}
+        
+        createUser(id, name, email, password)
+        res.status(201).send(users)
+    }catch(error: any){
+        res.status(400).send(error.message)
+    }
+    
 })
 
 // Busca por params id e deleta o user selecionado
@@ -55,7 +72,12 @@ app.delete("/users/:id", (req: Request, res: Response) => {
 
 // Busca todos os produtos.
 app.get("/products", (req: Request, res: Response) => {
-    res.status(200).send(products)
+    try{
+        res.status(200).send(products)
+
+    }catch(error: any){
+        res.status(400).send(error.message)
+    }
 })
 
 // Busca produto por nome do produto via query.
