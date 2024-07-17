@@ -1,4 +1,4 @@
-import { users, products, createUser, createProduct, getAllUsers, getAllProducts, searchProductsByName } from "./database";
+import { users, products, createUser, createProduct, getAllUsers, getAllProducts } from "./database";
 import express, { query, Request, Response } from "express"
 import cors from "cors"
 
@@ -30,10 +30,10 @@ app.get("/ping", (req: Request, res: Response) => {
     res.send("Pong!")
 })
 
-// Busca todos os usuário
+// Busca todos os usuários
 app.get("/users", (req: Request, res: Response) => {
     try{
-        res.status(200).send(users)
+        res.status(200).send(getAllUsers())
     }catch(error: any){
         res.status(400).send(error.message)
     }
@@ -43,37 +43,54 @@ app.get("/users", (req: Request, res: Response) => {
 app.post("/users", (req: Request, res: Response) => {
 
     try{
-        const id: string = "user7"
-        const name: string = "Gedalia"
-        const email: string = "gege@email.com"
-        const password: string = "ge.1234"
-
-        console.log(users)
-        //if (id === users.id){}
         
-        createUser(id, name, email, password)
-        res.status(201).send(users)
+        const id: string = req.body.id
+        const name: string = req.body.name
+        const email: string = req.body.email
+        const password: string = req.body.password        
+
+       users.map((user) => {
+        if (id === user.id) {
+            res.status(400)
+            throw new Error("ID já existe! Insira um ID diferente.")
+        }
+        if (email === user.email) {
+            res.status(400)
+            throw new Error("E-mail já existe! Insira um e-mail diferente.")
+        }
+       })
+        
+        res.status(201).send(createUser(id, name, email, password))
+
     }catch(error: any){
-        res.status(400).send(error.message)
+        res.send(error.message)
     }
     
 })
 
-// Busca por params id e deleta o user selecionado
+// Busca por params id e DELETA o USER selecionado
 app.delete("/users/:id", (req: Request, res: Response) => {
-    const idToDelete = req.params.id
-    
-    const index = users.findIndex((user) => user.id === idToDelete)
+    try{
+        const idToDelete = req.params.id
+        const index = users.findIndex((user) => user.id === idToDelete)
 
-    index < 0 ? res.status(400).send("User não encontrato") : users.splice(index, 1)
+        if (index < 0){
+            res.status(404)
+            throw new Error("User não encontrato")
+        } 
+        
+        users.splice(index, 1)
+        res.status(200).send("User apagado com sucesso!")
 
-    res.status(200).send("User apagado com sucesso!")
+    }catch(error: any){
+        res.send(error.message)
+    }
 })
 
 // Busca todos os produtos.
 app.get("/products", (req: Request, res: Response) => {
     try{
-        res.status(200).send(products)
+        res.status(200).send(getAllProducts())
 
     }catch(error: any){
         res.status(400).send(error.message)
@@ -82,31 +99,72 @@ app.get("/products", (req: Request, res: Response) => {
 
 // Busca produto por nome do produto via query.
 app.get("/products/search", (req: Request, res: Response) => {
-    const q = req.query.q as string;
-    let result = searchProductsByName(q)
-    
-    if (result === undefined) {
-        res.status(404).send(products)
-    } else {
-        res.status(200).send(result)
+    try{
+        const q = req.query.q as string;
+
+        if (q === ""){
+            res.status(404)
+            throw new Error("Informe pelo menos 1 caracter.")
+        }
+
+        const result = products.filter((product) => {
+            return product.name.toLowerCase().includes(q.toLowerCase())
+        })    
+        
+        if (result.length === 0) {
+            res.status(404)
+            throw new Error("Produto não encontrado.")
+        } else {
+            res.status(200).send(result)
+        }
+    }catch(error: any){
+        res.send(error.message)
     }
 })
 
 // Cadastra um novo produto, chama a função createProducts
 app.post("/products", (req: Request, res: Response) => {
-    createProduct("prod4", "impressora", 979, "Impressora multfuncionarl Epson", "https://encurtador.com.br/uuzKU")
-    res.status(201).send(products)
+
+    try{
+        
+        const id: string = req.body.id
+        const name: string = req.body.name
+        const price: number = req.body.price
+        const description: string = req.body.description    
+        const imageUrl: string = req.body.imageUrl    
+
+       products.map((product) => {
+        if (id === product.id) {
+            res.status(400)
+            throw new Error("ID já existe! Insira um ID diferente.")
+        }
+       })
+        
+        res.status(201).send(createProduct(id, name, price, description, imageUrl))
+
+    }catch(error: any){
+        res.send(error.message)
+    }
 })
 
-// Busca por params id e deleta o product selecionado
+// Busca por params id e DELETA o PRODUCT selecionado
 app.delete("/products/:id", (req: Request, res: Response) => {
-    const idToDelete = req.params.id
-    
-    const index = products.findIndex((product) => product.id === idToDelete)
+    try{
+        const idToDelete = req.params.id
+        const index = products.findIndex((product) => product.id === idToDelete)
 
-    index < 0 ? res.status(400).send("Product não encontrato") : products.splice(index, 1)
+        if (index < 0){
+            res.status(404)
+            throw new Error("Product não encontrato")
+        } 
+        
+        products.splice(index, 1)
+        res.status(200).send("Product apagado com sucesso!")
 
-    res.status(200).send("Product apagado com sucesso!")
+    }catch(error: any){
+        res.send(error.message)
+    }
+
 })
 
 // Atualizar um produto por ID

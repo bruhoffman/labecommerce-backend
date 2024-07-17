@@ -50,16 +50,26 @@ export const users:TUser [] = [
     }
 ]
 
-export const createUser = (id: string, name: string, email: string, password:string):void => {
-    const newUser: TUser = {id: id, name: name, email: email, password: password, createAt: `${new Date().toISOString()}` }
+export const createUser = (
+    id: string, 
+    name: string, 
+    email: string, 
+    password:string):void => {
+        const newUser: TUser = {
+            id, 
+            name, 
+            email, 
+            password, 
+            createAt: `${new Date().toISOString()}` 
+        }
+
     users.push(newUser)
-    //console.table(users)
+    
     return console.log("Cadastro realizado com sucesso!")
 }
 
 export function getAllUsers(){
-    console.log("Lista atualizada de users")
-    console.table(users)
+    return users
 }
 
 export const products: TProduct[] = [
@@ -88,20 +98,32 @@ export const products: TProduct[] = [
     },
 ]
 
-export const createProduct = (id: string, name: string, price: number, description: string, imageUrl: string) => {
-    const newProduct: TProduct = {id, name, price, description, imageUrl}
+export const createProduct = (
+    id: string, 
+    name: string, 
+    price: number, 
+    description: string, 
+    imageUrl: string) => {
+        const newProduct: TProduct = {
+            id, 
+            name, 
+            price, 
+            description, 
+            imageUrl
+        }
+
     products.push(newProduct)
+
     return console.log("Produto criado com sucesso!")
 }
 
 export function getAllProducts(){
-    console.log("Lista atualizada de produtos:")
-    console.table(products)
+    return(products)
 }
 
-export function searchProductsByName(name: string) {
+/* export function searchProductsByName(name: string) {
     const search = products.filter((product) => {
         return product.name.toLowerCase().includes(name.toLowerCase())})
     console.table(search)
 
-}
+} */
