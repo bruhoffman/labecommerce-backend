@@ -1,0 +1,28 @@
+GET http://localhost:3003/ping
+###
+
+GET http://localhost:3003/users
+###
+
+GET http://localhost:3003/users
+###
+
+DELETE http://localhost:3003/users/user2
+###
+
+PUT http://localhost:3003/users/user2
+Content-Type: application/json
+
+{
+    "id": "a003",
+    "ownerName": "Juliano",
+    "balance": 1000000000,
+    "type": "Ouro"
+}
+###
+
+GET http://localhost:3003/products
+###
+
+GET http://localhost:3003/products/q?=Teclado
+###
