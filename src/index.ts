@@ -51,11 +51,11 @@ app.post("/users", (req: Request, res: Response) => {
 
        users.map((user) => {
         if (id === user.id) {
-            res.status(400)
+            res.status(409)
             throw new Error("ID já existe! Insira um ID diferente.")
         }
         if (email === user.email) {
-            res.status(400)
+            res.status(409)
             throw new Error("E-mail já existe! Insira um e-mail diferente.")
         }
        })
@@ -135,7 +135,7 @@ app.post("/products", (req: Request, res: Response) => {
 
        products.map((product) => {
         if (id === product.id) {
-            res.status(400)
+            res.status(409)
             throw new Error("ID já existe! Insira um ID diferente.")
         }
        })
@@ -169,24 +169,33 @@ app.delete("/products/:id", (req: Request, res: Response) => {
 
 // Atualizar um produto por ID
 app.put("/products/:id", (req: Request, res: Response) => {
-    const { id } = req.params
 
-    const newId = req.body.id as string | undefined
-    const newName = req.body.name as string | undefined
-    const newPrice = req.body.price as number | undefined
-    const newDescription = req.body.description as string | undefined
-    const newImageUrl = req.body.imageUrl as string | undefined
+    try{
+        const { id } = req.params
 
-    const productFound = products.find((product) => product.id === id)
+        const newId = req.body.id as string | undefined
+        const newName = req.body.name as string | undefined
+        const newPrice = req.body.price as number | undefined
+        const newDescription = req.body.description as string | undefined
+        const newImageUrl = req.body.imageUrl as string | undefined
 
-    if (productFound){
-        productFound.id = newId || productFound.id
-        productFound.name = newName || productFound.name
-        productFound.price = newPrice || productFound.price
-        productFound.description = newDescription || productFound.description
-        productFound.imageUrl = newImageUrl || productFound.imageUrl
+        const productFound = products.find((product) => product.id === id)
+
+        if (!productFound){
+            res.status(404)
+            throw new Error("Product não encontrato")
+            
+        } else{
+            productFound.id = newId || productFound.id
+            productFound.name = newName || productFound.name
+            productFound.price = newPrice || productFound.price
+            productFound.description = newDescription || productFound.description
+            productFound.imageUrl = newImageUrl || productFound.imageUrl
+        }
+
+        res.status(200).send("Produto atualizado com sucesso!")
+    
+    }catch(error: any){
+        res.send(error.message)
     }
-
-    res.status(200).send("Produto atualizado com sucesso!")
-
 })
