@@ -1,4 +1,4 @@
--- Active: 1721319471283@@127.0.0.1@3306
+-- Active: 1721409156077@@127.0.0.1@3306
 CREATE TABLE users (
     id TEXT PRIMARY KEY UNIQUE NOT NULL,
     name TEXT NOT NULL,
@@ -6,8 +6,6 @@ CREATE TABLE users (
     password TEXT NOT NULL,
     created_at TEXT NOT NULL
 );
-
-SELECT * FROM users;
 
 INSERT INTO
     users (
@@ -46,8 +44,6 @@ CREATE TABLE products (
     description TEXT NOT NULL,
     image_url TEXT NOT NULL
 );
-
-SELECT * FROM products;
 
 INSERT INTO
     products (
@@ -92,3 +88,43 @@ VALUES (
         "1080p Full HD, 360° de Alcance, Visão Noturna.",
         "https://encurtador.com.br/au0Wj"
     );
+
+SELECT * FROM users;
+
+SELECT * FROM products;
+
+SELECT * FROM products WHERE name LIKE "%dell%"
+
+INSERT INTO
+    users
+VALUES (
+        "user04",
+        "Danilo",
+        "dandan@email.com",
+        "dan8723",
+        "2024-07-18 14:23:4531"
+    )
+
+INSERT INTO
+    products
+VALUES (
+        "p006",
+        "Notebook Lenovo IdeaPad 1i",
+        3989,
+        "Intel Core i7 12GB RAM - 512GB SSD 15,6” Windows 11.",
+        "https://encurtador.com.br/EJnJI"
+    )
+
+DELETE FROM users WHERE id = "user03"
+
+DELETE FROM products WHERE id = "p004"
+
+UPDATE products
+SET
+    id = "p001",
+    name = "Monitor Dell 17.5",
+    price = 898,
+    description = "Monitor Dell 17.5 UHD c/ HDMI",
+    image_url = "https://encurtador.com.br/L8dfT"
+WHERE
+    id = "p001"
