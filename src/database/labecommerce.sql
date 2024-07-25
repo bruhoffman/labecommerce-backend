@@ -1,4 +1,4 @@
--- Active: 1721409156077@@127.0.0.1@3306
+-- Active: 1721862820654@@127.0.0.1@3306
 CREATE TABLE users (
     id TEXT PRIMARY KEY UNIQUE NOT NULL,
     name TEXT NOT NULL,
@@ -6,6 +6,8 @@ CREATE TABLE users (
     password TEXT NOT NULL,
     created_at TEXT NOT NULL
 );
+
+SELECT * FROM users;
 
 INSERT INTO
     users (
@@ -44,6 +46,8 @@ CREATE TABLE products (
     description TEXT NOT NULL,
     image_url TEXT NOT NULL
 );
+
+SELECT * FROM products;
 
 INSERT INTO
     products (
@@ -88,10 +92,6 @@ VALUES (
         "1080p Full HD, 360° de Alcance, Visão Noturna.",
         "https://encurtador.com.br/au0Wj"
     );
-
-SELECT * FROM users;
-
-SELECT * FROM products;
 
 SELECT * FROM products WHERE name LIKE "%dell%"
 
