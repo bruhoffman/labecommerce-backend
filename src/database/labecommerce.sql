@@ -1,4 +1,4 @@
--- Active: 1721862820654@@127.0.0.1@3306
+-- Active: 1722615884940@@127.0.0.1@3306
 CREATE TABLE users (
     id TEXT PRIMARY KEY UNIQUE NOT NULL,
     name TEXT NOT NULL,
@@ -59,9 +59,9 @@ INSERT INTO
     )
 VALUES (
         "p001",
-        "Monitor Dell 17' ",
+        "Monitor Dell 17" ",
         750,
-        "Monitor Dell 17' UHD.",
+        " Monitor Dell 17 " UHD.",
         "https://encurtador.com.br/L8dfT"
     ),
     (
@@ -128,3 +128,40 @@ SET
     image_url = "https://encurtador.com.br/L8dfT"
 WHERE
     id = "p001"
+
+CREATE TABLE purchases (
+    id TEXT PRIMARY KEY UNIQUE NOT NULL,
+    buyer_id TEXT NOT NULL,
+    total_price REAL NOT NULL,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (buyer_id) REFERENCES users (id)
+);
+
+SELECT * FROM purchases;
+
+INSERT INTO
+    purchases
+VALUES (
+        "p001",
+        "user01",
+        259.90,
+        "2024-08-02 14:04:05"
+    ),
+    (
+        "p002",
+        "user02",
+        468.79,
+        "2024-08-02 14:06:55"
+    ),
+    (
+        "p003",
+        "user04",
+        321.20,
+        "2024-08-02 14:08:34"
+    );
+
+UPDATE purchases SET total_price = 1785.99 WHERE id = "p002"
+
+SELECT purchases.id, purchases.buyer_id, users.name, users.email, purchases.total_price, purchases.created_at
+FROM purchases
+    INNER JOIN users ON purchases.buyer_id = users.id;
