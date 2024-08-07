@@ -1,4 +1,4 @@
--- Active: 1722615884940@@127.0.0.1@3306
+-- Active: 1723042876287@@127.0.0.1@3306
 CREATE TABLE users (
     id TEXT PRIMARY KEY UNIQUE NOT NULL,
     name TEXT NOT NULL,
@@ -134,7 +134,7 @@ CREATE TABLE purchases (
     buyer_id TEXT NOT NULL,
     total_price REAL NOT NULL,
     created_at TEXT NOT NULL,
-    FOREIGN KEY (buyer_id) REFERENCES users (id)
+    FOREIGN KEY (buyer_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 SELECT * FROM purchases;
@@ -142,26 +142,49 @@ SELECT * FROM purchases;
 INSERT INTO
     purchases
 VALUES (
-        "p001",
+        "c001",
         "user01",
-        259.90,
+        237,
         "2024-08-02 14:04:05"
     ),
     (
-        "p002",
+        "c002",
         "user02",
         468.79,
         "2024-08-02 14:06:55"
     ),
     (
-        "p003",
+        "c003",
         "user04",
-        321.20,
+        3989,
         "2024-08-02 14:08:34"
     );
 
-UPDATE purchases SET total_price = 1785.99 WHERE id = "p002"
+UPDATE purchases SET total_price = 668.90 WHERE id = "p002"
 
 SELECT purchases.id, purchases.buyer_id, users.name, users.email, purchases.total_price, purchases.created_at
 FROM purchases
     INNER JOIN users ON purchases.buyer_id = users.id;
+
+-- Relações SQL II --
+CREATE TABLE purchases_products (
+    purchase_id TEXT NOT NULL,
+    product_id TEXT NOT NULL,
+    quantity INTEGER NOT NULL,
+    FOREIGN KEY (purchase_id) REFERENCES purchases (id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products (id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+INSERT INTO
+    purchases_products
+VALUES ('c001', 'p002', 3),
+    ('c002', 'p002', 1),
+    ('c002', 'p005', 1),
+    ('c003', 'p006', 1);
+
+-- Mostre em uma query todas as colunas das tabelas relacionadas (purchases_products, purchases e products).
+SELECT *
+FROM
+    purchases_products
+    INNER JOIN purchases ON purchases_products.purchase_id = purchases.id
+    INNER JOIN products ON purchases_products.product_id = products.id;
