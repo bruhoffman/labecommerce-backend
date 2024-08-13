@@ -1,10 +1,16 @@
 GET http://localhost:3003/ping
 ###
 
-GET http://localhost:3003/users
+POST http://localhost:3003/create-table-users
+###
+
+POST http://localhost:3003/create-table-products
 ###
 
 GET http://localhost:3003/users
+###
+
+POST http://localhost:3003/users
 ###
 
 DELETE http://localhost:3003/users/user2
