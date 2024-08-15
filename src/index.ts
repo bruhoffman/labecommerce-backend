@@ -1,21 +1,7 @@
 import { users, products, createUser, createProduct, getAllUsers, getAllProducts } from "./database";
 import express, { query, Request, Response } from "express"
 import cors from "cors"
-
-//console.table(users)
-//console.table(products)
-
-//       Exercício 1 - Typescript II
-//createUser("user7", "Gedalia", "gedalia@email.com", "ge789+")
-//getAllUsers()
-
-//       Exercício 2 - Typescript II
-//createProduct("prod4", "SSD gamer", 349.99, "Acelere seu sistema com velocidades incríveis de leitura e gravação.", "https://images.unsplash.com/photo")
-//getAllProducts()
-
-//       Exercício 3 - Typescript
-
-//searchProductsByName("Mouse")
+import { db } from "./database/knewx";
 
 const app = express()
 
@@ -26,16 +12,101 @@ app.listen(3003, () => {
     console.log("Servidor rodando na porta 3003")
 })
 
-app.get("/ping", (req: Request, res: Response) => {
-    res.send("Pong!")
+app.get("/ping", async (req: Request, res: Response) => {
+    try {
+        res.status(200).send({ message: "Pong!" })
+    } catch (error) {
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
+    }
 })
+
+//Criar tabela de usuários
+app.post('/create-table-users', async (req: Request, res: Response) => {
+    try {
+        await db.raw(`
+            CREATE TABLE users (
+                id TEXT PRIMARY KEY UNIQUE NOT NULL,
+                name TEXT NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            );    
+        `)
+    
+        res.status(200).send({message: 'Tabela de usuários criada com sucesso!'})
+
+    } catch(error){
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send('Erro inesperado!')
+        }
+    }
+});
+
+app.post('/create-table-products', async (req: Request, res: Response) => {
+    try{
+        await db.raw(`
+            CREATE TABLE products (
+                id TEXT PRIMARY KEY UNIQUE NOT NULL,
+                name TEXT NOT NULL,
+                price REAL NOT NULL,
+                description TEXT NOT NULL,
+                image_url TEXT NOT NULL
+            );
+        `)
+
+        res.status(200).send({message: 'Tabela de produtos criada com sucesso!'})
+
+    } catch(error){
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send('Erro inesperado!')
+        }
+    }
+
+})
+
 
 // Busca todos os usuários
 app.get("/users", (req: Request, res: Response) => {
     try{
         res.status(200).send(getAllUsers())
     }catch(error: any){
-        res.status(400).send(error.message)
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send('Erro inesperado!')
+        }
     }
 })
 
@@ -65,7 +136,6 @@ app.post("/users", (req: Request, res: Response) => {
     }catch(error: any){
         res.send(error.message)
     }
-    
 })
 
 // Busca por params id e DELETA o USER selecionado
