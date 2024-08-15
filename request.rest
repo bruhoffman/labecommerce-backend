@@ -7,10 +7,21 @@ POST http://localhost:3003/create-table-users
 POST http://localhost:3003/create-table-products
 ###
 
+POST http://localhost:3003/create-table-purchases-products
+###
+
 GET http://localhost:3003/users
 ###
 
 POST http://localhost:3003/users
+Content-Type: application/json
+
+{
+    "id": "user05",
+    "name": "Elson",
+    "email": "elson@email.com",
+    "password": "45631987el"
+}
 ###
 
 DELETE http://localhost:3003/users/user2
@@ -30,5 +41,16 @@ Content-Type: application/json
 GET http://localhost:3003/products
 ###
 
-GET http://localhost:3003/products/q?=Teclado
+GET http://localhost:3003/products/Cam
 ###
+
+POST http://localhost:3003/products
+Content-Type: application/json
+
+{
+    "id": "p007",
+    "name": "Impressora Multfuncional Lexmark MX511de",
+    "price": 5565.81,
+    "description": "Impressara com multiplas funções.",
+    "imageUrl": "https://encurtador.com.br/K2hjy"
+}
