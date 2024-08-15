@@ -1,3 +1,5 @@
+// COM O USO DO SQL/DB E KNEX, ESTE ARQUIVO NÃO SERÁ MAIS USADO.
+
 import { TUser, TProduct } from "./types";
 
 export const users:TUser [] = [
