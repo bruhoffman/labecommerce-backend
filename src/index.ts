@@ -64,9 +64,11 @@ app.post('/create-table-users', async (req: Request, res: Response) => {
 // Busca todos os Usuários
 app.get("/users", async (req: Request, res: Response) => {
     try{
-        const result = await db.raw(`
+        /* const result = await db.raw(`
             SELECT * FROM users;    
-        `)
+        `) */
+
+        const result = await db.select("*").from("users")
 
         res.status(200).send(result)
 
@@ -99,10 +101,18 @@ app.post("/users", async (req: Request, res: Response) => {
             throw new Error("Dados inválidos!")
         }
 
-       await db.raw(`
+       /* await db.raw(`
             INSERT INTO users (id, name, email, password, created_at)
             VALUES ("${id}", "${name}", "${email}", "${password}", "${"2024-08-15 11:39:32"}");
-        `)
+        `) */
+
+        await db.insert({
+                id: id,
+                name: name,
+                email: email,
+                password: password,
+                created_at: "2024-08-16 16:05:45"
+				}).into("users")
         
         res.status(201).send({message: "Usuário cadastrado com sucesso!"})
 
@@ -192,9 +202,7 @@ app.post('/create-table-products', async (req: Request, res: Response) => {
 // Busca todos os produtos.
 app.get("/products", async (req: Request, res: Response) => {
     try{
-        const result = await db.raw(`
-            SELECT * FROM products;    
-        `)
+        const result = await db.select("*").from("products")
 
         res.status(200).send(result)
 
@@ -216,12 +224,14 @@ app.get("/products", async (req: Request, res: Response) => {
 // Busca produto por nome do produto via query.
 app.get("/products/:name", async (req: Request, res: Response) => {
     try{
-        const name = req.params.name
+        const nameWanted = req.params.name
 
-        const productsList = await db.raw(`
+        /* const productsList = await db.raw(`
             SELECT * FROM products
             WHERE name LIKE '%${name}%';
-        `)
+        `) */
+
+        const productsList = await db.select('*').from('products').whereLike('name', `%${nameWanted}%`);
 
         res.status(200).send(productsList)
         
@@ -254,11 +264,14 @@ app.post("/products", async (req: Request, res: Response) => {
             res.status(400)
             throw new Error("Dados inválidos!")
         }
-
-        await db.raw(`
-            INSERT INTO products (id, name, price, description, image_url)
-            VALUES ("${id}", "${name}", "${price}", "${description}", "${imageUrl}")
-            `)
+        
+        await db.insert({
+                id: id,
+                name: name,
+                price: price,
+                description: description,
+                image_url: imageUrl
+				}).into("products")
 
         res.status(201).send({message: "Produto cadastrado com sucesso!"})
 
@@ -349,9 +362,7 @@ app.put("/products/:id", async (req: Request, res: Response) => {
             }
         }
 
-        const [ productFound ] = await db.raw(`
-            SELECT * FROM products WHERE id = "${idWanted}"
-        `)
+        const [ productFound ] = await db.select("*").from("productsusers").where({ id: `${idWanted}` })
 
         if (!productFound){
             res.status(404)
@@ -423,7 +434,7 @@ app.delete("/products/:id", async (req: Request, res: Response) => {
     }
 })
 
-//           <<<--- PEDIDOS --->>>
+//           <<<--- COMPRAS --->>>
 
 // Cria a tabela Compras
 app.post('/create-table-purchases', async (req: Request, res: Response) => {
@@ -442,7 +453,7 @@ app.post('/create-table-purchases', async (req: Request, res: Response) => {
 
         res.status(200).send({message: 'Tabela de pedidos criada com sucesso!'})
 
-    }catch(error){
+    } catch(error){
         console.log(error)
 
         if (req.statusCode === 200) {
@@ -460,9 +471,8 @@ app.post('/create-table-purchases', async (req: Request, res: Response) => {
 // Busca todos as compras
 app.get("/purchases", async (req: Request, res: Response) => {
     try{
-        const result = await db.raw(`
-            SELECT * FROM purchases;    
-        `)
+
+        const result = await db.select("*").from("purchases")
 
         res.status(200).send(result)
 
@@ -494,10 +504,12 @@ app.post('/purchases', async (req: Request, res: Response) => {
             throw new Error("Dados inválidos!")
         }
 
-        await db.raw(`
-            INSERT INTO purchases (id, buyer, total_price, created_at)
-            VALUES ("${id}", "${buyer}", "${total_price}", "${created_at}")
-            `)
+        await db.insert({
+            id: id,
+            buyer: buyer,
+            total_price: total_price,
+            created_at: created_at
+        }).into("purchases")
 
         res.status(201).send({message: "Compra cadastrada com sucesso!"})
 
@@ -516,7 +528,51 @@ app.post('/purchases', async (req: Request, res: Response) => {
     }
 })
 
-//           <<<--- PEDIDOS X PRODUTOS --->>>
+// Busca a compra e relaciona com o comprador.
+app.get("/purchases/:id", async (req: Request, res: Response) => {
+    try {
+        const idPurchase = req.params.id
+
+        if (idPurchase !== undefined){
+            if (typeof idPurchase !== "string") {
+                res.status(400)
+                throw new Error ("ID deve ser uma string")
+            }
+
+            if (idPurchase.length < 2){
+                res.status(400)
+                throw new Error ("'Id' deve possuir no mínimo 2 caracteres")
+            }
+        }
+
+        const result = await db("purchases")
+            .select()
+            .innerJoin(
+                "users",
+                "purchases.buyer",
+                "=",
+                "users.id"
+            )
+
+        res.status(200).send(result)
+
+    } catch(error){
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send('Erro inesperado!')
+        }
+    }
+
+})
+
+//           <<<--- RELAÇÃO DA COMPRA --->>>
 
 // Cria a tabela de relações Compras x Produtos
 app.post('/create-table-purchases-products', async (req: Request, res: Response) => {
@@ -555,9 +611,7 @@ app.post('/create-table-purchases-products', async (req: Request, res: Response)
 // Busca todos as compras
 app.get("/purchases-products", async (req: Request, res: Response) => {
     try{
-        const result = await db.raw(`
-            SELECT * FROM purchases_products;    
-        `)
+        const result = await db.select("*").from("purchases_products")
 
         res.status(200).send(result)
 
@@ -588,11 +642,12 @@ app.post('/purchases-products', async (req: Request, res: Response) => {
             throw new Error("Dados inválidos!")
         }
 
-        await db.raw(`
-            INSERT INTO purchases_products (purchase_id, product_id, quantity)
-            VALUES ("${purchase_id}", "${product_id}", "${quantity}")
-            `)
-
+        await db.insert({
+            purchase_id: purchase_id,
+            product_id: product_id,
+            quantity: quantity
+        }).into("purchases_products")
+        
         res.status(201).send({message: "Compra cadastrada com sucesso!"})
 
     } catch(error: any){
@@ -609,3 +664,4 @@ app.post('/purchases-products', async (req: Request, res: Response) => {
         }
     }
 })
+

@@ -17,9 +17,9 @@ POST http://localhost:3003/users
 Content-Type: application/json
 
 {
-    "id": "user03",
-    "name": "Carla",
-    "email": "caca@email.com",
+    "id": "user04",
+    "name": "Danila",
+    "email": "nila@email.com",
     "password": "45631987el"
 }
 ###
@@ -41,7 +41,7 @@ Content-Type: application/json
 GET http://localhost:3003/products
 ###
 
-GET http://localhost:3003/products/Cam
+GET http://localhost:3003/products/dell
 ###
 
 POST http://localhost:3003/products
@@ -60,7 +60,7 @@ PUT http://localhost:3003/products/p001
 Content-Type: application/json
 
 {
-    "price": 1099.89    
+    "imageUrl": "https://encurtador.com.br/9DFV7"
 }
 ###
 
@@ -79,6 +79,9 @@ Content-Type: application/json
     "total_price": 3220.78,
     "creadet_at": "2024-08-16 10:54:01"
 }
+###
+
+GET http://localhost:3003/purchases/buy001
 ###
 
 GET http://localhost:3003/purchases-products
