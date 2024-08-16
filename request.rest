@@ -17,17 +17,17 @@ POST http://localhost:3003/users
 Content-Type: application/json
 
 {
-    "id": "user05",
-    "name": "Elson",
-    "email": "elson@email.com",
+    "id": "user03",
+    "name": "Carla",
+    "email": "caca@email.com",
     "password": "45631987el"
 }
 ###
 
-DELETE http://localhost:3003/users/user2
+DELETE http://localhost:3003/users/user04
 ###
 
-PUT http://localhost:3003/users/user2
+PUT http://localhost:3003/users/user02
 Content-Type: application/json
 
 {
@@ -54,3 +54,42 @@ Content-Type: application/json
     "description": "Impressara com multiplas funções.",
     "imageUrl": "https://encurtador.com.br/K2hjy"
 }
+###
+
+PUT http://localhost:3003/products/p001
+Content-Type: application/json
+
+{
+    "price": 1099.89    
+}
+###
+
+DELETE http://localhost:3003/products/p007
+###
+
+GET http://localhost:3003/purchases
+###
+
+POST http://localhost:3003/purchases
+Content-Type: application/json
+
+{
+    "id": "buy003",
+    "buyer": "user02",
+    "total_price": 3220.78,
+    "creadet_at": "2024-08-16 10:54:01"
+}
+###
+
+GET http://localhost:3003/purchases-products
+###
+
+POST http://localhost:3003/purchases-products
+Content-Type: application/json
+
+{
+    "purchase_id": "buy003",
+    "product_id": "p002",
+    "quantity": 1
+}
+###

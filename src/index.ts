@@ -1,4 +1,3 @@
-import { users, products, createUser, createProduct, getAllUsers, getAllProducts } from "./database";
 import express, { query, Request, Response } from "express"
 import cors from "cors"
 import { db } from "./database/knex";
@@ -245,7 +244,6 @@ app.get("/products/:name", async (req: Request, res: Response) => {
 app.post("/products", async (req: Request, res: Response) => {
 
     try{
-        
         const id: string = req.body.id
         const name: string = req.body.name
         const price: number = req.body.price
@@ -283,7 +281,7 @@ app.post("/products", async (req: Request, res: Response) => {
 app.put("/products/:id", async (req: Request, res: Response) => {
 
     try{
-        const { id } = req.params
+        const idWanted = req.params.id
 
         const newId = req.body.id
         const newName = req.body.name
@@ -352,7 +350,7 @@ app.put("/products/:id", async (req: Request, res: Response) => {
         }
 
         const [ productFound ] = await db.raw(`
-            SELECT * FROM products WHERE id = "${id}"
+            SELECT * FROM products WHERE id = "${idWanted}"
         `)
 
         if (!productFound){
@@ -363,11 +361,12 @@ app.put("/products/:id", async (req: Request, res: Response) => {
             await db.raw(`
                 UPDATE products
                 SET
-                    id = newId || productFound.id,
-                    name = newName || productFound.name,
-                    price = newPrice || productFound.price,
-                    description = newDescription || productFound.description,
-                    image_url = newImageUrl || productFound.imageUrl
+                    id = "${newId || productFound.id}",
+                    name = "${newName || productFound.name}",
+                    price = "${newPrice || productFound.price}",
+                    description = "${newDescription || productFound.description}",
+                    image_url = "${newImageUrl || productFound.image_Url}"
+                WHERE id = "${idWanted}";
             `)
         }
 
@@ -389,23 +388,39 @@ app.put("/products/:id", async (req: Request, res: Response) => {
 })
 
 // Busca por params id e DELETA o PRODUCT selecionado
-app.delete("/products/:id", (req: Request, res: Response) => {
+app.delete("/products/:id", async (req: Request, res: Response) => {
     try{
         const idToDelete = req.params.id
-        const index = products.findIndex((product) => product.id === idToDelete)
+        
+        const [ product ] = await db.raw(`
+            SELECT * FROM products WHERE id = "${idToDelete}";
+        `)
 
-        if (index < 0){
+        if (!product){
             res.status(404)
-            throw new Error("Product não encontrato")
+            throw new Error("Produto não encontrato")
         } 
         
-        products.splice(index, 1)
-        res.status(200).send("Product apagado com sucesso!")
+        await db.raw(`
+	        DELETE FROM products
+			WHERE id = "${idToDelete}";
+        `)
+
+        res.status(200).send("Produto deletado com sucesso!")
 
     }catch(error: any){
-        res.send(error.message)
-    }
+        console.log(error)
 
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send('Erro inesperado!')
+        }
+    }
 })
 
 //           <<<--- PEDIDOS --->>>
@@ -442,6 +457,65 @@ app.post('/create-table-purchases', async (req: Request, res: Response) => {
     }
 })
 
+// Busca todos as compras
+app.get("/purchases", async (req: Request, res: Response) => {
+    try{
+        const result = await db.raw(`
+            SELECT * FROM purchases;    
+        `)
+
+        res.status(200).send(result)
+
+    }catch(error: any){
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send('Erro inesperado!')
+        }
+    }
+})
+
+// Cadastra nova compra.
+app.post('/purchases', async (req: Request, res: Response) => {
+    try{
+        const id: string = req.body.id
+        const buyer: string = req.body.buyer
+        const total_price: number = req.body.total_price
+        const created_at: string = req.body.created_at
+        
+        if (!id || !buyer || !total_price){
+            res.status(400)
+            throw new Error("Dados inválidos!")
+        }
+
+        await db.raw(`
+            INSERT INTO purchases (id, buyer, total_price, created_at)
+            VALUES ("${id}", "${buyer}", "${total_price}", "${created_at}")
+            `)
+
+        res.status(201).send({message: "Compra cadastrada com sucesso!"})
+
+    } catch(error: any){
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send('Erro inesperado!')
+        }
+    }
+})
+
 //           <<<--- PEDIDOS X PRODUTOS --->>>
 
 // Cria a tabela de relações Compras x Produtos
@@ -464,6 +538,64 @@ app.post('/create-table-purchases-products', async (req: Request, res: Response)
     res.status(200).send({message: 'Tabela de pedidos-produtos criada com sucesso!'})
 
     }catch(error){
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send('Erro inesperado!')
+        }
+    }
+})
+
+// Busca todos as compras
+app.get("/purchases-products", async (req: Request, res: Response) => {
+    try{
+        const result = await db.raw(`
+            SELECT * FROM purchases_products;    
+        `)
+
+        res.status(200).send(result)
+
+    }catch(error: any){
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send('Erro inesperado!')
+        }
+    }
+})
+
+// Cadastra os pedidos
+app.post('/purchases-products', async (req: Request, res: Response) => {
+    try{
+        const purchase_id: string = req.body.purchase_id
+        const product_id: string = req.body.product_id
+        const quantity: number = req.body.quantity
+                
+        if (!purchase_id || !product_id || !quantity){
+            res.status(400)
+            throw new Error("Dados inválidos!")
+        }
+
+        await db.raw(`
+            INSERT INTO purchases_products (purchase_id, product_id, quantity)
+            VALUES ("${purchase_id}", "${product_id}", "${quantity}")
+            `)
+
+        res.status(201).send({message: "Compra cadastrada com sucesso!"})
+
+    } catch(error: any){
         console.log(error)
 
         if (req.statusCode === 200) {
