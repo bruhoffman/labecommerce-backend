@@ -279,6 +279,115 @@ app.post("/products", async (req: Request, res: Response) => {
     }
 })
 
+// Atualizar um produto por ID
+app.put("/products/:id", async (req: Request, res: Response) => {
+
+    try{
+        const { id } = req.params
+
+        const newId = req.body.id
+        const newName = req.body.name
+        const newPrice = req.body.price
+        const newDescription = req.body.description
+        const newImageUrl = req.body.imageUrl
+
+        if (newId !== undefined){
+            if (typeof newId !== "string"){
+                res.status(400)
+                throw new Error("'Id' deve ser uma string")
+            }
+
+            if (newId.length < 2){
+                res.status(400)
+                throw new Error ("'Id' deve possuir no mínimo 2 caracteres")
+            }
+        }
+
+        if (newName !== undefined){
+            if (typeof newName !== "string"){
+                res.status(400)
+                throw new Error("'Name' deve ser uma string")
+            }
+
+            if (newName.length < 2){
+                res.status(400)
+                throw new Error ("'Name' deve possuir no mínimo 2 caracteres")
+            }
+        }
+
+        if (newPrice !== undefined){
+            if (typeof newPrice !== "number"){
+                res.status(400)
+                throw new Error("'Preço' deve ser um número real")
+            }
+
+            if (newPrice < 0){
+                res.status(400)
+                throw new Error ("'Preço' deve possuir um valor real")
+            }
+        }
+
+        if (newDescription !== undefined){
+            if (typeof newDescription !== "string"){
+                res.status(400)
+                throw new Error("'Descrição' deve ser uma string")
+            }
+
+            if (newDescription.length < 2){
+                res.status(400)
+                throw new Error ("'Descrição' deve possuir no mínimo 2 caracteres")
+            }
+        }
+
+        if (newImageUrl !== undefined){
+            if (typeof newImageUrl !== "string"){
+                res.status(400)
+                throw new Error("'URL' deve ser um endereço válido")
+            }
+
+            if (newImageUrl.length < 2){
+                res.status(400)
+                throw new Error ("'URL' deve possuir no mínimo 2 caracteres")
+            }
+        }
+
+        const [ productFound ] = await db.raw(`
+            SELECT * FROM products WHERE id = "${id}"
+        `)
+
+        if (!productFound){
+            res.status(404)
+            throw new Error("'Produto' não encontrato")
+            
+        } else{
+            await db.raw(`
+                UPDATE products
+                SET
+                    id = newId || productFound.id,
+                    name = newName || productFound.name,
+                    price = newPrice || productFound.price,
+                    description = newDescription || productFound.description,
+                    image_url = newImageUrl || productFound.imageUrl
+            `)
+        }
+
+        res.status(200).send("Produto atualizado com sucesso!")
+    
+    }catch(error: any){
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send('Erro inesperado!')
+        }
+    }
+})
+
 // Busca por params id e DELETA o PRODUCT selecionado
 app.delete("/products/:id", (req: Request, res: Response) => {
     try{
@@ -297,39 +406,6 @@ app.delete("/products/:id", (req: Request, res: Response) => {
         res.send(error.message)
     }
 
-})
-
-// Atualizar um produto por ID
-app.put("/products/:id", (req: Request, res: Response) => {
-
-    try{
-        const { id } = req.params
-
-        const newId = req.body.id as string | undefined
-        const newName = req.body.name as string | undefined
-        const newPrice = req.body.price as number | undefined
-        const newDescription = req.body.description as string | undefined
-        const newImageUrl = req.body.imageUrl as string | undefined
-
-        const productFound = products.find((product) => product.id === id)
-
-        if (!productFound){
-            res.status(404)
-            throw new Error("Product não encontrato")
-            
-        } else{
-            productFound.id = newId || productFound.id
-            productFound.name = newName || productFound.name
-            productFound.price = newPrice || productFound.price
-            productFound.description = newDescription || productFound.description
-            productFound.imageUrl = newImageUrl || productFound.imageUrl
-        }
-
-        res.status(200).send("Produto atualizado com sucesso!")
-    
-    }catch(error: any){
-        res.send(error.message)
-    }
 })
 
 //           <<<--- PEDIDOS --->>>
