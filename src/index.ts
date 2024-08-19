@@ -403,19 +403,14 @@ app.delete("/products/:id", async (req: Request, res: Response) => {
     try{
         const idToDelete = req.params.id
         
-        const [ product ] = await db.raw(`
-            SELECT * FROM products WHERE id = "${idToDelete}";
-        `)
+        const [ product ] = await db.select("*").from("products").where( {id : idToDelete})
 
         if (!product){
             res.status(404)
             throw new Error("Produto não encontrato")
         } 
         
-        await db.raw(`
-	        DELETE FROM products
-			WHERE id = "${idToDelete}";
-        `)
+        await db.delete().from("products").where({ id : idToDelete})
 
         res.status(200).send("Produto deletado com sucesso!")
 
@@ -545,14 +540,15 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
             }
         }
 
-        const result = await db("purchases")
-            .select()
+        const result = await db("purchases").where({ id : idPurchase})
             .innerJoin(
                 "users",
                 "purchases.buyer",
                 "=",
                 "users.id"
-            )
+            );
+        
+            console.log(result)
 
         res.status(200).send(result)
 
