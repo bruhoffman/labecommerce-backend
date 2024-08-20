@@ -81,7 +81,7 @@ Content-Type: application/json
 }
 ###
 
-GET http://localhost:3003/purchases/buy003
+GET http://localhost:3003/purchases/buy001
 ###
 
 GET http://localhost:3003/purchases-products
