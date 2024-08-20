@@ -1,0 +1,51 @@
+Deu "certo"
+
+        const buyer = await db
+            .select("purchases.id AS purchaseId", "users.id AS buyerId", "users.name AS buyerName", "users.email AS buyerEmail", "total_price", "purchases.created_at AS createdAt")
+            .from('purchases')
+            .where({purchaseId : idPurchase})
+            .innerJoin(
+                "users",
+                "purchases.buyer",
+                "=",
+                "users.id"
+            );
+        
+        const produtos = await db
+            .select("products.id", "products.name", "products.price", "products.description", "purchases_products.quantity")
+            .from('purchases_products')
+            .where({purchase_id : idPurchase})
+            .innerJoin(
+                "products",
+                "purchases_products.product_id",
+                "=",
+                "products.id"               
+            );
+        
+        const result = {buyer, produtos}
+
+
+-------------------
+
+
+
+NÃO DEU CERTO
+const result = await db
+            .select( "purchases.id AS purchaseId", "users.id AS buyerId", "users.name AS buyerName", "users.email AS buyerEmail", "total_price", "purchases.created_at AS createdAt")
+            .from("purchases")
+            .where({purchaseId : idPurchase})
+            .join(
+                "users",
+                "purchases.buyer",
+                "=",
+                "users.id"
+            )
+            .select("products.id AS productId", "products.name", "products.price", "products.description", "purchases_products.quantity")
+            .where({purchase_id : idPurchase})
+            .from("purchases_products")
+            .join(
+                "products",
+                "purchases_products.product_id",
+                "=",
+                "productId"               
+            );

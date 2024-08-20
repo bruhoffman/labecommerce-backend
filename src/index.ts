@@ -524,7 +524,7 @@ app.post('/purchases', async (req: Request, res: Response) => {
 })
 
 // Busca a compra e relaciona com o comprador.
-app.get("/purchases/:id", async (req: Request, res: Response) => {
+/* app.get("/purchases/:id", async (req: Request, res: Response) => {
     try {
         const idPurchase = req.params.id
 
@@ -551,6 +551,65 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
                 "users.id"
             );
 
+        res.status(200).send(result)
+
+    } catch(error){
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send('Erro inesperado!')
+        }
+    }
+
+}) */
+
+// Busca o pedido, a compra e o comprador.
+app.get("/purchases/:id", async (req: Request, res: Response) => {
+    try {
+        const idPurchase = req.params.id
+
+        if (idPurchase !== undefined){
+            if (typeof idPurchase !== "string") {
+                res.status(400)
+                throw new Error ("ID deve ser uma string")
+            }
+
+            if (idPurchase.length < 2){
+                res.status(400)
+                throw new Error ("'Id' deve possuir no mínimo 2 caracteres")
+            }
+        }
+
+        const buyer = await db
+            .select("purchases.id AS purchaseId", "users.id AS buyerId", "users.name AS buyerName", "users.email AS buyerEmail", "total_price", "purchases.created_at AS createdAt")
+            .from('purchases')
+            .where({purchaseId : idPurchase})
+            .innerJoin(
+                "users",
+                "purchases.buyer",
+                "=",
+                "users.id"
+            );
+        
+        const produtos = await db
+            .select("products.id", "products.name", "products.price", "products.description", "purchases_products.quantity")
+            .from('purchases_products')
+            .where({purchase_id : idPurchase})
+            .innerJoin(
+                "products",
+                "purchases_products.product_id",
+                "=",
+                "products.id"               
+            );
+        
+        const result = {buyer, produtos}
+            
         res.status(200).send(result)
 
     } catch(error){
