@@ -540,16 +540,16 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
             }
         }
 
-        const result = await db("purchases")
+        const result = await db
+            .select("purchases.id AS purchaseId", "users.id AS buyerId", "users.name AS buyerName", "users.email AS buyerEmail", "total_price", "purchases.created_at AS createdAt")
+            .from('purchases')
+            .where({purchaseId : idPurchase})
             .innerJoin(
                 "users",
                 "purchases.buyer",
                 "=",
-                "users.id",
-            ).where({"purchaes.id": idPurchase})
-
-        
-            console.log(result)
+                "users.id"
+            );
 
         res.status(200).send(result)
 
