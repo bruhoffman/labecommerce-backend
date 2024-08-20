@@ -1,4 +1,4 @@
-import express, { query, Request, Response } from "express"
+import express, { Request, Response } from "express"
 import cors from "cors"
 import { db } from "./database/knex";
 
@@ -467,7 +467,7 @@ app.post('/create-table-purchases', async (req: Request, res: Response) => {
 app.get("/purchases", async (req: Request, res: Response) => {
     try{
 
-        const result = await db.select("*").from("purchases")
+        const result = await db("purchases")
 
         res.status(200).send(result)
 
@@ -540,15 +540,16 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
             }
         }
 
-        const result = await db("purchases").where({ id : idPurchase})
+        const result = await db
+            .select("purchases.id AS purchaseId", "users.id AS buyerId", "users.name AS buyerName", "users.email AS buyerEmail", "total_price", "purchases.created_at AS createdAt")
+            .from('purchases')
+            .where({purchaseId : idPurchase})
             .innerJoin(
                 "users",
                 "purchases.buyer",
                 "=",
                 "users.id"
             );
-        
-            console.log(result)
 
         res.status(200).send(result)
 
